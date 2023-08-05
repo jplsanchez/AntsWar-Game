@@ -57,3 +57,13 @@ func (b *GameBoard) TrySetEmptySpace(i int, j int) bool {
 	}
 	return false
 }
+
+func (b GameBoard) CountQueens() int {
+	numberOfQueens := 0
+	b.LoopThroughBoard(func(i, j int) {
+		if b[i][j].Value == 0 {
+			numberOfQueens++
+		}
+	})
+	return numberOfQueens
+}
