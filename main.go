@@ -1,14 +1,17 @@
 package main
 
-type Team uint8
+import (
+	"antswar/display"
+	"antswar/game"
+)
 
 func main() {
-	display := ConsoleDisplay{}
+	display := display.ConsoleDisplay{}
 	run(display)
 }
 
-func run(d Displayer) {
-	var board GameBoard
+func run(d display.Displayer) {
+	var board game.GameBoard
 	board.LoadInitialBoard()
 
 	d.Display(board)

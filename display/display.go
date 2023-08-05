@@ -1,6 +1,7 @@
-package main
+package display
 
 import (
+	"antswar/game"
 	"fmt"
 	"os"
 )
@@ -11,12 +12,12 @@ const (
 )
 
 type Displayer interface {
-	Display(gb GameBoard)
+	Display(gb game.GameBoard)
 }
 
 type ConsoleDisplay struct{}
 
-func (cd ConsoleDisplay) Display(gb GameBoard) {
+func (cd ConsoleDisplay) Display(gb game.GameBoard) {
 	for i := 0; i < gb.Height(); i++ {
 		cd.DisplayMiddle(i, gb)
 		for j := 0; j < gb.Width(); j++ {
@@ -26,17 +27,17 @@ func (cd ConsoleDisplay) Display(gb GameBoard) {
 	}
 }
 
-func (ConsoleDisplay) DisplayMiddle(i int, gb GameBoard) {
+func (ConsoleDisplay) DisplayMiddle(i int, gb game.GameBoard) {
 	if i == gb.Height()/2 {
 		fmt.Println("- - - - -")
 	}
 }
 
-func (cd ConsoleDisplay) HandleAndDisplay(gb GameBoard, i int, j int) {
+func (cd ConsoleDisplay) HandleAndDisplay(gb game.GameBoard, i int, j int) {
 	val := gb[j][i].Value
 
 	fmt.Fprintf(os.Stdout, "%s", ColorNone)
-	if gb[j][i].Team == TeamRed {
+	if gb[j][i].Team == game.TeamRed {
 		fmt.Fprintf(os.Stdout, "%s", ColorRed)
 	}
 

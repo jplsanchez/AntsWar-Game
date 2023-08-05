@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"math/rand"
@@ -6,6 +6,8 @@ import (
 )
 
 const Cards_Per_Team = 19
+
+type Team uint8
 
 const (
 	TeamRed Team = iota

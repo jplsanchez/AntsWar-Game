@@ -1,4 +1,4 @@
-package main
+package game
 
 const Middle_Col_Index = 2
 
