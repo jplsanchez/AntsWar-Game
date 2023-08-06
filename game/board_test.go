@@ -2,7 +2,7 @@ package game
 
 import "testing"
 
-func TestBoardHeight(t *testing.T) {
+func TestGameBoard_Height(t *testing.T) {
 	var board GameBoard
 	result := board.Height()
 	expected := 8
@@ -12,7 +12,7 @@ func TestBoardHeight(t *testing.T) {
 	}
 }
 
-func TestBoardWidth(t *testing.T) {
+func TestGameBoard_Width(t *testing.T) {
 	var board GameBoard
 	result := board.Width()
 	expected := 5

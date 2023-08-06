@@ -2,6 +2,11 @@ package game
 
 const Middle_Col_Index = 2
 
+type Position struct {
+	x int
+	y int
+}
+
 type GameBoard [5][8]Card
 
 func (b GameBoard) Width() int {

@@ -2,11 +2,6 @@ package game
 
 import "errors"
 
-type Position struct {
-	x int
-	y int
-}
-
 type GameStage uint8
 
 const (
@@ -38,12 +33,7 @@ func NewGameManager(startingTeam Team, board *GameBoard) *GameManager {
 }
 
 func (gm *GameManager) StartPlayersTurn() {
-	switch gm.States.Team {
-	case TeamBlack:
-		gm.States.Team = TeamRed
-	case TeamRed:
-		gm.States.Team = TeamBlack
-	}
+	gm.States.Team.Enemy()
 }
 
 func (gm *GameManager) ChooseCard(x, y int) error {
@@ -54,8 +44,8 @@ func (gm *GameManager) ChooseCard(x, y int) error {
 	return nil
 }
 
-func (gm *GameManager) ChooseAction(action GameAction) error {
-	if err := action.CanDo(); err != nil {
+func (gm *GameManager) ChooseAction(action GameAction, pos Position) error {
+	if err := action.CanDo(pos, *gm.Board, gm.States.Team); err != nil {
 		return err
 	}
 	gm.States.ActionSelected = action

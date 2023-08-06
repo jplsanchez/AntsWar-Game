@@ -14,6 +14,16 @@ const (
 	TeamBlack
 )
 
+func (t Team) Enemy() Team {
+	if t == TeamBlack {
+		return TeamRed
+	}
+	if t == TeamRed {
+		return TeamBlack
+	}
+	panic("Unknown team")
+}
+
 type Card struct {
 	Value int
 	Team  Team
