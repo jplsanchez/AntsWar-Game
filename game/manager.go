@@ -27,9 +27,22 @@ type GameManager struct {
 }
 
 func NewGameManager(startingTeam Team, board *GameBoard) *GameManager {
-	states := States{Team: startingTeam}
+	states := States{
+		Team:         startingTeam,
+		Stage:        ChooseCardStage,
+		GameFinished: false,
+	}
 	gm := GameManager{Turns: 0, Board: board, States: &states}
 	return &gm
+}
+
+func (gm *GameManager) NextGameStage() GameStage {
+	if gm.States.Stage == EndTurnStage {
+		gm.States.Stage = StartTurnStage
+		return gm.States.Stage
+	}
+	gm.States.Stage++
+	return gm.States.Stage
 }
 
 func (gm *GameManager) StartPlayersTurn() {
