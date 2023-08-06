@@ -13,11 +13,11 @@ const (
 )
 
 type States struct {
-	Stage          GameStage
-	Team           Team
-	CardSelected   Position
-	GameFinished   bool
-	ActionSelected GameAction
+	Stage            GameStage
+	Team             Team
+	SelectedPosition Position
+	GameFinished     bool
+	ActionSelected   GameAction
 }
 
 type GameManager struct {
@@ -40,19 +40,23 @@ func (gm *GameManager) ChooseCard(x, y int) error {
 	if x >= gm.Board.Width() || y >= gm.Board.Width() {
 		return errors.New("x or y out of dimensions of the board")
 	}
-	gm.States.CardSelected = Position{x: x, y: y}
+	gm.States.SelectedPosition = Position{x: x, y: y}
 	return nil
 }
 
 func (gm *GameManager) ChooseAction(action GameAction, pos Position) error {
-	if err := action.CanDo(pos, *gm.Board, gm.States.Team); err != nil {
+	if err := action.CanDo(pos, *gm.Board); err != nil {
 		return err
 	}
 	gm.States.ActionSelected = action
 	return nil
 }
 
-func (gm GameManager) ResolveAction() {
+func (gm GameManager) ResolveAction(target Position) {
+	gm.States.ActionSelected.SetPosition(gm.States.SelectedPosition)
+	gm.States.ActionSelected.SetTargetPosition(target)
+	gm.States.ActionSelected.SetGameBoard(gm.Board)
+
 	gm.States.ActionSelected.DoAction()
 }
 

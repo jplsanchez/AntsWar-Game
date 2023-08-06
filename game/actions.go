@@ -3,18 +3,55 @@ package game
 import "errors"
 
 type GameAction interface {
-	DoAction()
-	CanDo(pos Position, gb GameBoard, team Team) error
+	SetPosition(pos Position) *GameAction
+	SetTargetPosition(pos Position) *GameAction
+	SetGameBoard(gb *GameBoard) *GameAction
+	DoAction() error
+	CanDo(pos Position, gb GameBoard) error
 }
 
-type March struct{}
+// MARCH
 
-func (m March) DoAction() { /*TODO*/ }
-func (m March) CanDo(pos Position, gb GameBoard, team Team) error {
+type March struct {
+	pos       Position
+	targetPos Position
+	gb        *GameBoard
+}
+
+func (m *March) SetPosition(pos Position) *March       { m.pos = pos; return m }
+func (m *March) SetTargetPosition(pos Position) *March { m.targetPos = pos; return m }
+func (m *March) SetGameBoard(gb *GameBoard) *March     { m.gb = gb; return m }
+func (m March) DoAction() error {
+	//TODO: test
+	if err := m.Validate(); err != nil {
+		return err
+	}
+
+	vector := m.targetPos.Sub(m.pos)
+	vector.Normalize()
+
+	if vector.x != 0 && vector.y == 0 {
+		for i := m.targetPos.x; i == m.pos.x+vector.x; i += vector.x {
+			m.gb[i][m.pos.y] = m.gb[i-vector.x][m.pos.y]
+		}
+		m.gb[m.pos.x][m.pos.y] = EmptyCard()
+	}
+
+	if vector.y != 0 && vector.x == 0 {
+		for j := m.targetPos.y; j == m.pos.y+vector.y; j += vector.y {
+			m.gb[m.pos.x][j] = m.gb[m.pos.x][j-vector.y]
+		}
+		m.gb[m.pos.x][m.pos.y] = EmptyCard()
+	}
+
+	return nil
+}
+
+func (m March) CanDo(pos Position, gb GameBoard) error {
 	hasFreeSpaces := false
 
 	checkIfIsEmptySpaceAligned := func(i, j int) bool { return (i == pos.x || j == pos.y) && gb[i][j].Value == -1 }
-	isEmptySpaceConnectedToPosition := func(i, j int) bool { return IsEmptySpaceConnectedToPosition(Position{i, j}, pos, gb, team) }
+	isEmptySpaceConnectedToPosition := func(i, j int) bool { return IsEmptySpaceConnectedToPosition(Position{i, j}, pos, gb) }
 
 	gb.LoopThroughBoard(func(i, j int) {
 		if checkIfIsEmptySpaceAligned(i, j) && isEmptySpaceConnectedToPosition(i, j) {
@@ -27,9 +64,208 @@ func (m March) CanDo(pos Position, gb GameBoard, team Team) error {
 	}
 	return nil
 }
+func (m March) Validate() error {
+	if m.gb == nil {
+		return errors.New("march is not valid because gameboard is nil")
+	}
+	if m.pos == m.targetPos {
+		return errors.New("march is not valid because position and target position are the same")
+	}
+	if err := m.pos.Validate(*m.gb); err != nil {
+		return err
+	}
+	if err := m.targetPos.Validate(*m.gb); err != nil {
+		return err
+	}
+	if vector := m.targetPos.Sub(m.pos); vector.x != 0 && vector.y != 0 {
+		return errors.New("march is not valid because position and target position are not aligned")
+	}
+	return nil
+}
 
-func IsEmptySpaceConnectedToPosition(emptySpace, pos Position, gb GameBoard, team Team) bool {
+// SWAP
 
+type Swap struct {
+	pos       Position
+	targetPos Position
+	gb        *GameBoard
+}
+
+func (s *Swap) SetPosition(pos Position) *Swap       { s.pos = pos; return s }
+func (s *Swap) SetTargetPosition(pos Position) *Swap { s.targetPos = pos; return s }
+func (s *Swap) SetGameBoard(gb *GameBoard) *Swap     { s.gb = gb; return s }
+func (s Swap) DoAction() error {
+	if err := s.Validate(); err != nil {
+		return err
+	}
+	card := s.gb.GetCard(s.pos)
+	target := s.gb.GetCard(s.targetPos)
+
+	s.gb.SetCard(s.pos, target)
+	s.gb.SetCard(s.targetPos, card)
+	return nil
+}
+func (s Swap) CanDo(pos Position, gb GameBoard) error {
+	team := gb.GetCard(pos).Team
+	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team }
+	hasAdjacentAllyCards := ValidateAdjacentCards(gb, pos, validation)
+	if !hasAdjacentAllyCards {
+		return errors.New("cannot swap in this position because it has no adjacent ally cards")
+	}
+	return nil
+}
+func (s Swap) Validate() error {
+	if s.gb == nil {
+		return errors.New("swap is not valid because gameboard is nil")
+	}
+	if s.pos == s.targetPos {
+		return errors.New("swap is not valid because position and target position are the same")
+	}
+	if err := s.pos.Validate(*s.gb); err != nil {
+		return err
+	}
+	if err := s.targetPos.Validate(*s.gb); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MOVE
+
+type Move struct {
+	pos       Position
+	targetPos Position
+	gb        *GameBoard
+}
+
+func (m *Move) SetPosition(pos Position) *Move       { m.pos = pos; return m }
+func (m *Move) SetTargetPosition(pos Position) *Move { m.targetPos = pos; return m }
+func (m *Move) SetGameBoard(gb *GameBoard) *Move     { m.gb = gb; return m }
+func (m Move) DoAction() error {
+	if err := m.Validate(); err != nil {
+		return err
+	}
+
+	card := m.gb.GetCard(m.pos)
+	m.gb.SetCard(m.targetPos, card)
+	m.gb.SetCard(m.pos, EmptyCard())
+	return nil
+}
+func (m Move) CanDo(pos Position, gb GameBoard) error {
+	validation := func(c Card) bool { return c.Value < 0 }
+	hasAdjacentFreeSpaces := ValidateAdjacentCards(gb, pos, validation)
+	if !hasAdjacentFreeSpaces {
+		return errors.New("cannot move in this position because it has no adjacent free spaces")
+	}
+	return nil
+}
+func (m Move) Validate() error {
+	if m.gb == nil {
+		return errors.New("move is not valid because gameboard is nil")
+	}
+	if m.pos == m.targetPos {
+		return errors.New("move is not valid because position and target position are the same")
+	}
+	if err := m.pos.Validate(*m.gb); err != nil {
+		return err
+	}
+	if err := m.targetPos.Validate(*m.gb); err != nil {
+		return err
+	}
+	return nil
+}
+
+// ATTACK
+
+type Attack struct {
+	pos       Position
+	targetPos Position
+	gb        *GameBoard
+}
+
+func (a *Attack) SetPosition(pos Position) *Attack       { a.pos = pos; return a }
+func (a *Attack) SetTargetPosition(pos Position) *Attack { a.targetPos = pos; return a }
+func (a *Attack) SetGameBoard(gb *GameBoard) *Attack     { a.gb = gb; return a }
+
+func (a Attack) CanDo(pos Position, gb GameBoard) error {
+	team := gb.GetCard(pos).Team
+	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value < gb[pos.x][pos.y].Value }
+	hasAdjacentEnemyCards := ValidateAdjacentCards(gb, pos, validation)
+	if !hasAdjacentEnemyCards {
+		return errors.New("cannot attack in this position because it has no adjacent enemy cards that can be attacked")
+	}
+	return nil
+}
+
+func (a Attack) DoAction() error {
+	if err := a.Validate(); err != nil {
+		return err
+	}
+
+	card := a.gb.GetCard(a.pos)
+	target := a.gb.GetCard(a.targetPos)
+
+	if target.Value == None || target.Team != card.Team.Enemy() || target.Value > card.Value {
+		return errors.New("cannot attack in this position because target cannot be attacked")
+	}
+
+	if target.Value == card.Value {
+		a.gb.SetCard(a.targetPos, EmptyCard())
+	} else {
+		a.gb.SetCard(a.targetPos, card)
+	}
+	a.gb.SetCard(a.pos, EmptyCard())
+
+	return nil
+}
+
+func (a Attack) Validate() error {
+	if a.gb == nil {
+		return errors.New("attack is not valid because gameboard is nil")
+	}
+	if a.pos == a.targetPos {
+		return errors.New("attack is not valid because position and target position are the same")
+	}
+	if err := a.pos.Validate(*a.gb); err != nil {
+		return err
+	}
+	if err := a.targetPos.Validate(*a.gb); err != nil {
+		return err
+	}
+	return nil
+}
+
+// HELPERS
+
+func ValidateAdjacentCards(gb GameBoard, pos Position, validate func(c Card) bool) bool {
+	outOfRange := func(i, j int) bool {
+		return i < 0 || i >= gb.Width() || j < 0 || j >= gb.Height()
+	}
+
+	if !outOfRange(pos.x+1, pos.y) {
+		if c := gb[pos.x+1][pos.y]; validate(c) {
+			return true
+		}
+	}
+	if !outOfRange(pos.x-1, pos.y) {
+		if c := gb[pos.x-1][pos.y]; validate(c) {
+			return true
+		}
+	}
+	if !outOfRange(pos.x, pos.y+1) {
+		if c := gb[pos.x][pos.y+1]; validate(c) {
+			return true
+		}
+	}
+	if !outOfRange(pos.x, pos.y-1) {
+		if c := gb[pos.x][pos.y-1]; validate(c) {
+			return true
+		}
+	}
+	return false
+}
+func IsEmptySpaceConnectedToPosition(emptySpace, pos Position, gb GameBoard) bool {
+	team := gb.GetCard(pos).Team
 	sameColumn := emptySpace.x == pos.x
 	sameRow := emptySpace.y == pos.y
 	connectionIsNotValid := func(i, j int) bool {
@@ -65,68 +301,4 @@ func IsEmptySpaceConnectedToPosition(emptySpace, pos Position, gb GameBoard, tea
 		}
 	}
 	return true
-}
-
-type Swap struct{}
-
-func (s Swap) DoAction() { /*TODO*/ }
-func (s Swap) CanDo(pos Position, gb GameBoard, team Team) error {
-	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team }
-	hasAdjacentAllyCards := ValidateAdjacentCards(gb, pos, validation)
-	if !hasAdjacentAllyCards {
-		return errors.New("cannot swap in this position because it has no adjacent ally cards")
-	}
-	return nil
-}
-
-type Move struct{}
-
-func (m Move) DoAction() { /*TODO*/ }
-func (m Move) CanDo(pos Position, gb GameBoard, team Team) error {
-	validation := func(c Card) bool { return c.Value < 0 }
-	hasAdjacentFreeSpaces := ValidateAdjacentCards(gb, pos, validation)
-	if !hasAdjacentFreeSpaces {
-		return errors.New("cannot move in this position because it has no adjacent free spaces")
-	}
-	return nil
-}
-
-type Attack struct{}
-
-func (a Attack) DoAction() { /*TODO*/ }
-func (a Attack) CanDo(pos Position, gb GameBoard, team Team) error {
-	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value < gb[pos.x][pos.y].Value }
-	hasAdjacentEnemyCards := ValidateAdjacentCards(gb, pos, validation)
-	if !hasAdjacentEnemyCards {
-		return errors.New("cannot attack in this position because it has no adjacent enemy cards that can be attacked")
-	}
-	return nil
-}
-
-func ValidateAdjacentCards(gb GameBoard, pos Position, validate func(c Card) bool) bool {
-	outOfRange := func(i, j int) bool {
-		return i < 0 || i >= gb.Width() || j < 0 || j >= gb.Height()
-	}
-
-	if !outOfRange(pos.x+1, pos.y) {
-		if c := gb[pos.x+1][pos.y]; validate(c) {
-			return true
-		}
-	}
-	if !outOfRange(pos.x-1, pos.y) {
-		if c := gb[pos.x-1][pos.y]; validate(c) {
-			return true
-		}
-	}
-	if !outOfRange(pos.x, pos.y+1) {
-		if c := gb[pos.x][pos.y+1]; validate(c) {
-			return true
-		}
-	}
-	if !outOfRange(pos.x, pos.y-1) {
-		if c := gb[pos.x][pos.y-1]; validate(c) {
-			return true
-		}
-	}
-	return false
 }

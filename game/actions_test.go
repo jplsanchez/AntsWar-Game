@@ -4,11 +4,12 @@ import (
 	"testing"
 )
 
+var NoCard Card = Card{-1, -1}
+
 func TestAttack_CanDo(t *testing.T) {
 	type args struct {
-		pos  Position
-		gb   GameBoard
-		team Team
+		pos Position
+		gb  GameBoard
 	}
 	tests := []struct {
 		name    string
@@ -22,13 +23,12 @@ func TestAttack_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{9, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{9, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
@@ -38,13 +38,12 @@ func TestAttack_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{9, 0}, {2, 1}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{9, 0}, {2, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
@@ -54,13 +53,12 @@ func TestAttack_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{8, 0}, {9, 1}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{8, 0}, {9, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
@@ -70,20 +68,19 @@ func TestAttack_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{9, 0}, {2, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{8, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{9, 0}, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{8, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.a.CanDo(tt.args.pos, tt.args.gb, tt.args.team); (err != nil) != tt.wantErr {
+			if err := tt.a.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
 				t.Errorf("Attack.CanDo() error = %v,  want %v", err, tt.wantErr)
 			}
 		})
@@ -92,9 +89,8 @@ func TestAttack_CanDo(t *testing.T) {
 
 func TestMove_CanDo(t *testing.T) {
 	type args struct {
-		pos  Position
-		gb   GameBoard
-		team Team
+		pos Position
+		gb  GameBoard
 	}
 	tests := []struct {
 		name    string
@@ -108,13 +104,12 @@ func TestMove_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{0, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{0, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{1, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
@@ -124,20 +119,19 @@ func TestMove_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{0, 0}, {1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{0, 0}, {1, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{1, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.CanDo(tt.args.pos, tt.args.gb, tt.args.team); (err != nil) != tt.wantErr {
+			if err := tt.m.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
 				t.Errorf("Move.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -146,9 +140,8 @@ func TestMove_CanDo(t *testing.T) {
 
 func TestSwap_CanDo(t *testing.T) {
 	type args struct {
-		pos  Position
-		gb   GameBoard
-		team Team
+		pos Position
+		gb  GameBoard
 	}
 	tests := []struct {
 		name    string
@@ -162,13 +155,12 @@ func TestSwap_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{9, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{9, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
@@ -178,13 +170,12 @@ func TestSwap_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{8, 0}, {9, 1}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{8, 0}, {9, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
@@ -194,20 +185,19 @@ func TestSwap_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{9, 0}, {2, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{8, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
-					{{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}},
+					{{9, 0}, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{8, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.s.CanDo(tt.args.pos, tt.args.gb, tt.args.team); (err != nil) != tt.wantErr {
+			if err := tt.s.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
 				t.Errorf("Swap.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -216,9 +206,8 @@ func TestSwap_CanDo(t *testing.T) {
 
 func TestMarch_CanDo(t *testing.T) {
 	type args struct {
-		pos  Position
-		gb   GameBoard
-		team Team
+		pos Position
+		gb  GameBoard
 	}
 	tests := []struct {
 		name    string
@@ -238,7 +227,6 @@ func TestMarch_CanDo(t *testing.T) {
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
@@ -248,13 +236,12 @@ func TestMarch_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{2, 0}, {-1, 0}, {2, 0}, {-1, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, NoCard, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
@@ -264,13 +251,12 @@ func TestMarch_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{2, 0}, {2, 0}, {2, 0}, {-1, 1}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, NoCard, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
@@ -284,9 +270,8 @@ func TestMarch_CanDo(t *testing.T) {
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
-					{{-1, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{NoCard, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 				},
-				team: 0,
 			},
 			wantErr: false,
 		},
@@ -296,20 +281,19 @@ func TestMarch_CanDo(t *testing.T) {
 			args: args{
 				pos: Position{0, 0},
 				gb: GameBoard{
-					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {-1, 1}, {-1, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, NoCard, NoCard},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
 				},
-				team: 0,
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.CanDo(tt.args.pos, tt.args.gb, tt.args.team); (err != nil) != tt.wantErr {
+			if err := tt.m.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
 				t.Errorf("March.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

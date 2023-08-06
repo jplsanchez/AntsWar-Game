@@ -2,11 +2,6 @@ package game
 
 const Middle_Col_Index = 2
 
-type Position struct {
-	x int
-	y int
-}
-
 type GameBoard [5][8]Card
 
 func (b GameBoard) Width() int {
@@ -71,4 +66,12 @@ func (b GameBoard) CountQueens() int {
 		}
 	})
 	return numberOfQueens
+}
+
+func (b GameBoard) GetCard(pos Position) Card {
+	return b[pos.x][pos.y]
+}
+
+func (b *GameBoard) SetCard(pos Position, card Card) {
+	b[pos.x][pos.y] = card
 }

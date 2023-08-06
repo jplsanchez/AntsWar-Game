@@ -7,7 +7,9 @@ import (
 
 const Cards_Per_Team = 19
 
-type Team uint8
+type Team int8
+
+const None = -1
 
 const (
 	TeamRed Team = iota
@@ -28,6 +30,8 @@ type Card struct {
 	Value int
 	Team  Team
 }
+
+var EmptyCard = func() Card { return Card{Value: None, Team: None} }
 
 type Deck []Card
 
