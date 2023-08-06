@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 const Middle_Col_Index = 2
 
 type GameBoard [5][8]Card
@@ -74,4 +76,15 @@ func (b GameBoard) GetCard(pos Position) Card {
 
 func (b *GameBoard) SetCard(pos Position, card Card) {
 	b[pos.x][pos.y] = card
+}
+
+func (b GameBoard) Equals(comparison GameBoard) error {
+	for i := range b {
+		for j := range b[i] {
+			if b[i][j] != comparison[i][j] {
+				return fmt.Errorf("boards are not equal at i=%v, j=%v", i, j)
+			}
+		}
+	}
+	return nil
 }

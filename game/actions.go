@@ -22,7 +22,6 @@ func (m *March) SetPosition(pos Position) *March       { m.pos = pos; return m }
 func (m *March) SetTargetPosition(pos Position) *March { m.targetPos = pos; return m }
 func (m *March) SetGameBoard(gb *GameBoard) *March     { m.gb = gb; return m }
 func (m March) DoAction() error {
-	//TODO: test
 	if err := m.Validate(); err != nil {
 		return err
 	}
@@ -30,15 +29,15 @@ func (m March) DoAction() error {
 	vector := m.targetPos.Sub(m.pos)
 	vector.Normalize()
 
-	if vector.x != 0 && vector.y == 0 {
-		for i := m.targetPos.x; i == m.pos.x+vector.x; i += vector.x {
+	if vector.y == 0 && vector.x != 0 {
+		for i := m.targetPos.x; i != m.pos.x; i -= vector.x {
 			m.gb[i][m.pos.y] = m.gb[i-vector.x][m.pos.y]
 		}
 		m.gb[m.pos.x][m.pos.y] = EmptyCard()
 	}
 
-	if vector.y != 0 && vector.x == 0 {
-		for j := m.targetPos.y; j == m.pos.y+vector.y; j += vector.y {
+	if vector.x == 0 && vector.y != 0 {
+		for j := m.targetPos.y; j != m.pos.y; j -= vector.y {
 			m.gb[m.pos.x][j] = m.gb[m.pos.x][j-vector.y]
 		}
 		m.gb[m.pos.x][m.pos.y] = EmptyCard()

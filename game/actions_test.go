@@ -299,3 +299,363 @@ func TestMarch_CanDo(t *testing.T) {
 		})
 	}
 }
+
+func TestMarch_DoAction_Errors(t *testing.T) {
+	tests := []struct {
+		name    string
+		m       March
+		wantErr bool
+	}{
+		{
+			name: "March vertically",
+			m: March{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 3},
+				gb: &GameBoard{
+					{{0, 0}, {2, 0}, {2, 0}, NoCard, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "March horizontally",
+			m: March{
+				pos:       Position{0, 0},
+				targetPos: Position{4, 0},
+				gb: &GameBoard{
+					{{0, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{NoCard, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "March diagonally must generate error",
+			m: March{
+				pos:       Position{0, 0},
+				targetPos: Position{4, 1},
+				gb: &GameBoard{
+					{{0, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, NoCard, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.m.DoAction(); (err != nil) != tt.wantErr {
+				t.Errorf("March.DoAction() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+func TestMarch_DoAction_BoardMove(t *testing.T) {
+	tests := []struct {
+		name      string
+		m         March
+		wantBoard GameBoard
+	}{
+		{
+			name: "March vertically",
+			m: March{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 3},
+				gb: &GameBoard{
+					{{0, 0}, {1, 0}, {2, 0}, NoCard, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, {0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+			},
+		},
+		{
+			name: "March horizontally",
+			m: March{
+				pos:       Position{0, 0},
+				targetPos: Position{4, 0},
+				gb: &GameBoard{
+					{{0, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{1, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{{3, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+					{NoCard, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{0, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{1, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+				{{3, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 1}, {2, 1}, {2, 1}, {2, 1}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.m.DoAction(); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+			if err := tt.m.gb.Equals(tt.wantBoard); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+		})
+	}
+}
+
+func TestSwap_DoAction(t *testing.T) {
+	tests := []struct {
+		name      string
+		s         Swap
+		wantBoard GameBoard
+	}{
+		{
+			name: "swap vertically",
+			s: Swap{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 1},
+				gb: &GameBoard{
+					{{1, 0}, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{3, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{{2, 0}, {1, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{{3, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+		{
+			name: "swap horizontally",
+			s: Swap{
+				pos:       Position{0, 0},
+				targetPos: Position{1, 0},
+				gb: &GameBoard{
+					{{1, 0}, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{3, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{{3, 0}, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{{1, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.s.DoAction(); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+			if err := tt.s.gb.Equals(tt.wantBoard); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+		})
+	}
+}
+
+func TestMove_DoAction(t *testing.T) {
+	tests := []struct {
+		name      string
+		m         Move
+		wantBoard GameBoard
+	}{
+		{
+			name: "move vertically",
+			m: Move{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 1},
+				gb: &GameBoard{
+					{{0, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, {0, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+		{
+			name: "move horizontally",
+			m: Move{
+				pos:       Position{0, 0},
+				targetPos: Position{1, 0},
+				gb: &GameBoard{
+					{{0, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{{0, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.m.DoAction(); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+			if err := tt.m.gb.Equals(tt.wantBoard); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+		})
+	}
+}
+
+func TestAttack_DoAction_BoardMove(t *testing.T) {
+	tests := []struct {
+		name      string
+		a         Attack
+		wantBoard GameBoard
+	}{
+		{
+			name: "attack vertically",
+			a: Attack{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 1},
+				gb: &GameBoard{
+					{{2, 0}, {1, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, {2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+		{
+			name: "attack horizontally",
+			a: Attack{
+				pos:       Position{0, 0},
+				targetPos: Position{1, 0},
+				gb: &GameBoard{
+					{{2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{{1, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{{2, 0}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+		{
+			name: "attack equal power",
+			a: Attack{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 1},
+				gb: &GameBoard{
+					{{1, 0}, {1, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantBoard: GameBoard{
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.a.DoAction(); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+			if err := tt.a.gb.Equals(tt.wantBoard); err != nil {
+				t.Errorf("March.DoAction() error = %v", err)
+			}
+		})
+	}
+}
+
+func TestAttack_DoAction_Errors(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       Attack
+		wantErr bool
+	}{
+		{
+			name: "attack higher power",
+			a: Attack{
+				pos:       Position{0, 0},
+				targetPos: Position{0, 1},
+				gb: &GameBoard{
+					{{1, 0}, {9, 1}, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+					{NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard, NoCard},
+				},
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.a.DoAction(); (err != nil) != tt.wantErr {
+				t.Errorf("March.DoAction() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
