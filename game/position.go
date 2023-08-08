@@ -11,7 +11,7 @@ type Position struct {
 }
 
 func (p Position) Validate(gb GameBoard) error {
-	if p.x > gb.Height() || p.y > gb.Width() {
+	if p.y > gb.Height() || p.x > gb.Width() {
 		return errors.New("Position out of bounds")
 	}
 	return nil

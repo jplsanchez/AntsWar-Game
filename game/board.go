@@ -7,11 +7,13 @@ const Middle_Col_Index = 2
 type GameBoard [5][8]Card
 
 func (b GameBoard) Width() int {
-	return len(b)
+	test := len(b)
+	return test
 }
 
 func (b GameBoard) Height() int {
-	return len(b[0])
+	test := len(b[0])
+	return test
 }
 
 func (b *GameBoard) LoopThroughBoard(action func(i, j int)) {

@@ -79,6 +79,10 @@ func (m March) Validate() error {
 	if vector := m.targetPos.Sub(m.pos); vector.x != 0 && vector.y != 0 {
 		return errors.New("march is not valid because position and target position are not aligned")
 	}
+	if !IsEmptySpaceConnectedToPosition(m.targetPos, m.pos, *m.gb) {
+		return errors.New("march is not valid because target position is not connected to position")
+	}
+
 	return nil
 }
 

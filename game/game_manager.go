@@ -53,7 +53,7 @@ func (gm *GameManager) StartTurn() {
 }
 
 func (gm *GameManager) ChooseCard(x, y int) error {
-	if x >= gm.Board.Width() || y >= gm.Board.Width() {
+	if y >= gm.Board.Height() || x >= gm.Board.Width() {
 		return errors.New("x or y out of dimensions of the board")
 	}
 	card := gm.Board.GetCard(Position{x: x, y: y})
