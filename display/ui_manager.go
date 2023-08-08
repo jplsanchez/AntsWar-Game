@@ -25,10 +25,10 @@ func NewUI(d Displayer) *UIManager {
 func (ui *UIManager) Run() {
 	ui.Disp.SetHighlight(-1, -1)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
+	ui.Disp.SetPlayer(ui.Game.States.Team)
 
 	for !ui.Game.States.GameFinished {
 		ui.Disp.DisplayMessage(" ")
-		ui.Disp.SetPlayer(ui.Game.States.Team)
 
 		switch ui.Game.States.Stage {
 		case game.StartTurnStage:
@@ -50,6 +50,7 @@ func (ui *UIManager) Run() {
 func (ui *UIManager) StartPlayersTurnRoutine() {
 	ui.Game.StartTurn()
 	ui.Disp.SetHighlight(-1, -1)
+	ui.Disp.SetPlayer(ui.Game.States.Team)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
 	ui.Disp.DisplayMessage("It's your turn! Team:" + ui.Game.States.Team.String())
 }
@@ -121,8 +122,7 @@ func (ui *UIManager) ResolveActionRoutine() {
 func (ui *UIManager) EndTurnRoutine() {
 	message := ui.Game.CheckIfGameFinished()
 
-	if message != "" {
-		ui.Disp.DisplayMessage("Turn ended")
+	if message == "" {
 		return
 	}
 

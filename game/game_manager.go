@@ -34,7 +34,7 @@ func NewGameManager(startingTeam Team, board *GameBoard) *GameManager {
 		Stage:        ChooseCardStage,
 		GameFinished: false,
 	}
-	gm := GameManager{Turns: 0, Board: board, States: &states}
+	gm := GameManager{Turns: 10, Board: board, States: &states}
 	return &gm
 }
 
@@ -86,14 +86,13 @@ func (gm GameManager) ResolveAction(x, y int) error {
 
 func (gm *GameManager) CheckIfGameFinished() string {
 	queens := gm.Board.CountQueens()
-	if len(queens) < 2 {
-		gm.States.GameFinished = true
-		return ""
-	}
-
 	if len(queens) == 0 {
+		gm.States.GameFinished = true
 		return "Draw"
 	}
-
-	return queens[0].String() + " won!"
+	if len(queens) == 1 {
+		gm.States.GameFinished = true
+		return queens[0].String() + " won!"
+	}
+	return ""
 }

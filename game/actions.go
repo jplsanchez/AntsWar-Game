@@ -207,7 +207,7 @@ func (a Attack) CanDo(pos Position, gb GameBoard, turn int) error {
 	}
 
 	team := gb.GetCard(pos).Team
-	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value < gb[pos.x][pos.y].Value }
+	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value <= gb[pos.x][pos.y].Value }
 	hasAdjacentEnemyCards := ValidateAdjacentCards(gb, pos, validation)
 	if !hasAdjacentEnemyCards {
 		return errors.New("cannot attack in this position because it has no adjacent enemy cards that can be attacked")
@@ -243,6 +243,9 @@ func (a Attack) Validate() error {
 	}
 	if a.pos == a.targetPos {
 		return errors.New("attack is not valid because position and target position are the same")
+	}
+	if a.targetPos.Sub(a.pos).Magnitude() != 1 {
+		return errors.New("attack is not valid because position and target position are not adjacent")
 	}
 	if err := a.pos.Validate(*a.gb); err != nil {
 		return err
