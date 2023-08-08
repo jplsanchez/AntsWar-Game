@@ -34,7 +34,7 @@ func NewGameManager(startingTeam Team, board *GameBoard) *GameManager {
 		Stage:        ChooseCardStage,
 		GameFinished: false,
 	}
-	gm := GameManager{Turns: 10, Board: board, States: &states}
+	gm := GameManager{Turns: 0, Board: board, States: &states}
 	return &gm
 }
 
