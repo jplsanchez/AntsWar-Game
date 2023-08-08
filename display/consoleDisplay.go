@@ -12,10 +12,10 @@ type ConsoleDisplay struct {
 	highlightX, highlightY int
 	textColor              color.Color
 	board                  game.GameBoard
-	messageLog             MessageLog
+	messageLog             *MessageLog
 }
 
-func (cd *ConsoleDisplay) DisplayBoard(gb game.GameBoard) {
+func (cd *ConsoleDisplay) UpdateBoard(gb game.GameBoard) {
 	cd.board = gb
 	cd.UpdateDisplay()
 }
@@ -29,22 +29,20 @@ func (cd *ConsoleDisplay) DisplayMessage(message string) {
 	default:
 		cd.textColor = *color.New(color.FgWhite)
 	}
-	cd.messageLog.Append(message, cd.textColor)
+	cd.messageLog = cd.messageLog.Append(message, cd.textColor)
 	cd.UpdateDisplay()
 }
 
-func (cd ConsoleDisplay) AskForString(messages ...string) (string, error) {
+func (cd *ConsoleDisplay) AskForString(messages ...string) (string, error) {
 	for _, message := range messages {
 		cd.DisplayMessage(message)
 	}
 	var input string
 	_, err := fmt.Scanln(&input)
+	if err == nil {
+		cd.messageLog = cd.messageLog.Append(input, *color.New(color.FgWhite))
+	}
 	return input, err
-}
-
-func AskForCoordinates(messages ...string) (int, int, error) {
-	// TODO Remove this function
-	return 0, 0, nil
 }
 
 func (cd *ConsoleDisplay) SetPlayer(player game.Team) {
@@ -56,7 +54,10 @@ func (cd *ConsoleDisplay) SetHighlight(x, y int) {
 	cd.highlightY = y
 }
 
-func (cd ConsoleDisplay) UpdateDisplay() {
+func (cd *ConsoleDisplay) UpdateDisplay() {
+	if cd.messageLog == nil {
+		cd.messageLog = &MessageLog{}
+	}
 	CallClear()
 	cd.PrintBoard(cd.board)
 	cd.messageLog.Print()

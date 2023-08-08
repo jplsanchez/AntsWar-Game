@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"math"
 )
 
 type Position struct {
@@ -10,7 +11,7 @@ type Position struct {
 }
 
 func (p Position) Validate(gb GameBoard) error {
-	if p.x > gb.Width() || p.y > gb.Height() {
+	if p.x > gb.Height() || p.y > gb.Width() {
 		return errors.New("Position out of bounds")
 	}
 	return nil
@@ -29,6 +30,9 @@ func (p *Position) Normalize() {
 	if p.y != 0 {
 		p.y = p.y / Abs(p.y)
 	}
+}
+func (p Position) Magnitude() float64 {
+	return math.Sqrt(float64(p.x*p.x + p.y*p.y))
 }
 
 func Abs(val int) int {

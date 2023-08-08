@@ -2,7 +2,7 @@ package display
 
 import "github.com/fatih/color"
 
-const MessageLogSize = 10
+const MessageLogSize = 16
 
 type MessageLog []Message
 

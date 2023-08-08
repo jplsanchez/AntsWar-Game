@@ -70,10 +70,10 @@ func (m March) Validate() error {
 	if m.pos == m.targetPos {
 		return errors.New("march is not valid because position and target position are the same")
 	}
-	if err := m.pos.Validate(*m.gb); err != nil {
-		return err
+	if m.gb.GetCard(m.targetPos).Value != EmptyCard().Value {
+		return errors.New("march is not valid because target position is not empty")
 	}
-	if err := m.targetPos.Validate(*m.gb); err != nil {
+	if err := m.pos.Validate(*m.gb); err != nil {
 		return err
 	}
 	if vector := m.targetPos.Sub(m.pos); vector.x != 0 && vector.y != 0 {
@@ -119,6 +119,17 @@ func (s Swap) Validate() error {
 	}
 	if s.pos == s.targetPos {
 		return errors.New("swap is not valid because position and target position are the same")
+	}
+	if s.targetPos.Sub(s.pos).Magnitude() != 1 {
+		return errors.New("swap is not valid because position and target position are not adjacent")
+	}
+	targetCard := s.gb.GetCard(s.targetPos)
+	actionCard := s.gb.GetCard(s.pos)
+	if targetCard.Value == EmptyCard().Value {
+		return errors.New("swap is not valid because target position is empty")
+	}
+	if targetCard.Team != actionCard.Team {
+		return errors.New("swap is not valid because target position is an ally card")
 	}
 	if err := s.pos.Validate(*s.gb); err != nil {
 		return err

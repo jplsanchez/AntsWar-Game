@@ -2,6 +2,8 @@ package display
 
 import (
 	"antswar/game"
+	"errors"
+	"regexp"
 	"strconv"
 )
 
@@ -22,7 +24,7 @@ func NewUI(d Displayer) *UIManager {
 
 func (ui *UIManager) Run() {
 	ui.Disp.SetHighlight(-1, -1)
-	ui.Disp.DisplayBoard(*ui.Game.Board)
+	ui.Disp.UpdateBoard(*ui.Game.Board)
 
 	for !ui.Game.States.GameFinished {
 		ui.Disp.DisplayMessage(" ")
@@ -42,32 +44,31 @@ func (ui *UIManager) Run() {
 		}
 
 		ui.Game.NextGameStage()
-
-		ui.Disp.DisplayBoard(*ui.Game.Board)
 	}
 }
 
 func (ui *UIManager) StartPlayersTurnRoutine() {
 	ui.Game.StartTurn()
 	ui.Disp.SetHighlight(-1, -1)
+	ui.Disp.UpdateBoard(*ui.Game.Board)
 	ui.Disp.DisplayMessage("It's your turn! Team:" + ui.Game.States.Team.String())
 }
 
 func (ui *UIManager) ChooseCardRoutine() {
-	x, y, err := ui.Disp.AskForCoordinates("Choose a card to play")
+	x, y, err := ui.GetCoordinatesFromUser("Choose a card to play")
 	if err != nil {
 		ui.Disp.DisplayMessage("Error reading coordinates")
 		ui.ChooseCardRoutine()
 		return
 	}
-	ui.Disp.SetHighlight(x, y)
-	ui.Game.ChooseCard(x, y)
+	err = ui.Game.ChooseCard(x, y)
 	if err != nil {
 		ui.Disp.DisplayMessage(err.Error())
 		ui.ChooseCardRoutine()
 		return
 	}
-	ui.Disp.DisplayMessage("Coord - x:" + strconv.Itoa(x) + " y:" + strconv.Itoa(y))
+	ui.Disp.SetHighlight(x, y)
+	ui.Disp.UpdateBoard(*ui.Game.Board)
 }
 
 func (ui *UIManager) ChooseActionRoutine() {
@@ -80,7 +81,7 @@ func (ui *UIManager) ChooseActionRoutine() {
 
 	switch action {
 	case "move":
-		ui.Game.States.ActionSelected = &game.March{}
+		ui.Game.States.ActionSelected = &game.Move{}
 	case "swap":
 		ui.Game.States.ActionSelected = &game.Swap{}
 	case "march":
@@ -102,7 +103,7 @@ func (ui *UIManager) ChooseActionRoutine() {
 }
 
 func (ui *UIManager) ResolveActionRoutine() {
-	x, y, err := ui.Disp.AskForCoordinates("Choose a target")
+	x, y, err := ui.GetCoordinatesFromUser("Choose a target")
 	if err != nil {
 		ui.Disp.DisplayMessage("Error reading coordinates")
 		ui.ResolveActionRoutine()
@@ -114,7 +115,7 @@ func (ui *UIManager) ResolveActionRoutine() {
 		ui.ResolveActionRoutine()
 		return
 	}
-	ui.Disp.DisplayMessage("Coord - x:" + strconv.Itoa(x) + " y:" + strconv.Itoa(y))
+	ui.Disp.UpdateBoard(*ui.Game.Board)
 }
 
 func (ui *UIManager) EndTurnRoutine() {
@@ -126,4 +127,24 @@ func (ui *UIManager) EndTurnRoutine() {
 	}
 
 	ui.Disp.DisplayMessage(message)
+}
+
+func (ui UIManager) GetCoordinatesFromUser(messages ...string) (int, int, error) {
+	str, err := ui.Disp.AskForString(messages...)
+	if err != nil {
+		return -1, -1, err
+	}
+	re := regexp.MustCompile("[0-9],[0-9]")
+	if re.MatchString(str) {
+		x, err := strconv.Atoi(str[0:1])
+		if err != nil {
+			return -1, -1, err
+		}
+		y, err := strconv.Atoi(str[2:3])
+		if err != nil {
+			return -1, -1, err
+		}
+		return x, y, nil
+	}
+	return -1, -1, errors.New("invalid coordinates, should be in format \"x,y\"")
 }

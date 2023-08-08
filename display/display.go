@@ -5,10 +5,9 @@ import (
 )
 
 type Displayer interface {
-	DisplayBoard(gb game.GameBoard)
+	UpdateBoard(gb game.GameBoard)
 	DisplayMessage(message string)
+	AskForString(messages ...string) (string, error)
 	SetPlayer(player game.Team)
 	SetHighlight(x, y int)
-	AskForString(messages ...string) (string, error)
-	AskForCoordinates(messages ...string) (int, int, error)
 }
