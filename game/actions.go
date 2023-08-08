@@ -3,11 +3,11 @@ package game
 import "errors"
 
 type GameAction interface {
-	SetPosition(pos Position) *GameAction
-	SetTargetPosition(pos Position) *GameAction
-	SetGameBoard(gb *GameBoard) *GameAction
+	SetPosition(pos Position) GameAction
+	SetTargetPosition(pos Position) GameAction
+	SetGameBoard(gb *GameBoard) GameAction
 	DoAction() error
-	CanDo(pos Position, gb GameBoard) error
+	CanDo(pos Position, gb GameBoard, turn int) error
 }
 
 // MARCH
@@ -18,9 +18,9 @@ type March struct {
 	gb        *GameBoard
 }
 
-func (m *March) SetPosition(pos Position) *March       { m.pos = pos; return m }
-func (m *March) SetTargetPosition(pos Position) *March { m.targetPos = pos; return m }
-func (m *March) SetGameBoard(gb *GameBoard) *March     { m.gb = gb; return m }
+func (m *March) SetPosition(pos Position) GameAction       { m.pos = pos; return m }
+func (m *March) SetTargetPosition(pos Position) GameAction { m.targetPos = pos; return m }
+func (m *March) SetGameBoard(gb *GameBoard) GameAction     { m.gb = gb; return m }
 func (m March) DoAction() error {
 	if err := m.Validate(); err != nil {
 		return err
@@ -46,7 +46,7 @@ func (m March) DoAction() error {
 	return nil
 }
 
-func (m March) CanDo(pos Position, gb GameBoard) error {
+func (m March) CanDo(pos Position, gb GameBoard, turn int) error {
 	hasFreeSpaces := false
 
 	checkIfIsEmptySpaceAligned := func(i, j int) bool { return (i == pos.x || j == pos.y) && gb[i][j].Value == -1 }
@@ -90,9 +90,9 @@ type Swap struct {
 	gb        *GameBoard
 }
 
-func (s *Swap) SetPosition(pos Position) *Swap       { s.pos = pos; return s }
-func (s *Swap) SetTargetPosition(pos Position) *Swap { s.targetPos = pos; return s }
-func (s *Swap) SetGameBoard(gb *GameBoard) *Swap     { s.gb = gb; return s }
+func (s *Swap) SetPosition(pos Position) GameAction       { s.pos = pos; return s }
+func (s *Swap) SetTargetPosition(pos Position) GameAction { s.targetPos = pos; return s }
+func (s *Swap) SetGameBoard(gb *GameBoard) GameAction     { s.gb = gb; return s }
 func (s Swap) DoAction() error {
 	if err := s.Validate(); err != nil {
 		return err
@@ -104,7 +104,7 @@ func (s Swap) DoAction() error {
 	s.gb.SetCard(s.targetPos, card)
 	return nil
 }
-func (s Swap) CanDo(pos Position, gb GameBoard) error {
+func (s Swap) CanDo(pos Position, gb GameBoard, turn int) error {
 	team := gb.GetCard(pos).Team
 	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team }
 	hasAdjacentAllyCards := ValidateAdjacentCards(gb, pos, validation)
@@ -137,9 +137,9 @@ type Move struct {
 	gb        *GameBoard
 }
 
-func (m *Move) SetPosition(pos Position) *Move       { m.pos = pos; return m }
-func (m *Move) SetTargetPosition(pos Position) *Move { m.targetPos = pos; return m }
-func (m *Move) SetGameBoard(gb *GameBoard) *Move     { m.gb = gb; return m }
+func (m *Move) SetPosition(pos Position) GameAction       { m.pos = pos; return m }
+func (m *Move) SetTargetPosition(pos Position) GameAction { m.targetPos = pos; return m }
+func (m *Move) SetGameBoard(gb *GameBoard) GameAction     { m.gb = gb; return m }
 func (m Move) DoAction() error {
 	if err := m.Validate(); err != nil {
 		return err
@@ -150,7 +150,7 @@ func (m Move) DoAction() error {
 	m.gb.SetCard(m.pos, EmptyCard())
 	return nil
 }
-func (m Move) CanDo(pos Position, gb GameBoard) error {
+func (m Move) CanDo(pos Position, gb GameBoard, turn int) error {
 	validation := func(c Card) bool { return c.Value < 0 }
 	hasAdjacentFreeSpaces := ValidateAdjacentCards(gb, pos, validation)
 	if !hasAdjacentFreeSpaces {
@@ -182,11 +182,15 @@ type Attack struct {
 	gb        *GameBoard
 }
 
-func (a *Attack) SetPosition(pos Position) *Attack       { a.pos = pos; return a }
-func (a *Attack) SetTargetPosition(pos Position) *Attack { a.targetPos = pos; return a }
-func (a *Attack) SetGameBoard(gb *GameBoard) *Attack     { a.gb = gb; return a }
+func (a *Attack) SetPosition(pos Position) GameAction       { a.pos = pos; return a }
+func (a *Attack) SetTargetPosition(pos Position) GameAction { a.targetPos = pos; return a }
+func (a *Attack) SetGameBoard(gb *GameBoard) GameAction     { a.gb = gb; return a }
 
-func (a Attack) CanDo(pos Position, gb GameBoard) error {
+func (a Attack) CanDo(pos Position, gb GameBoard, turn int) error {
+	if turn < 10 {
+		return errors.New("cannot attack until played 5 times")
+	}
+
 	team := gb.GetCard(pos).Team
 	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value < gb[pos.x][pos.y].Value }
 	hasAdjacentEnemyCards := ValidateAdjacentCards(gb, pos, validation)

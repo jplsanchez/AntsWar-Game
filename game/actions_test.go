@@ -80,7 +80,7 @@ func TestAttack_CanDo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.a.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
+			if err := tt.a.CanDo(tt.args.pos, tt.args.gb, 10); (err != nil) != tt.wantErr {
 				t.Errorf("Attack.CanDo() error = %v,  want %v", err, tt.wantErr)
 			}
 		})
@@ -131,7 +131,7 @@ func TestMove_CanDo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
+			if err := tt.m.CanDo(tt.args.pos, tt.args.gb, 10); (err != nil) != tt.wantErr {
 				t.Errorf("Move.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -197,7 +197,7 @@ func TestSwap_CanDo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.s.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
+			if err := tt.s.CanDo(tt.args.pos, tt.args.gb, 10); (err != nil) != tt.wantErr {
 				t.Errorf("Swap.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -293,7 +293,7 @@ func TestMarch_CanDo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.CanDo(tt.args.pos, tt.args.gb); (err != nil) != tt.wantErr {
+			if err := tt.m.CanDo(tt.args.pos, tt.args.gb, 10); (err != nil) != tt.wantErr {
 				t.Errorf("March.CanDo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

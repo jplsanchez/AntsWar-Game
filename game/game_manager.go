@@ -1,6 +1,8 @@
 package game
 
-import "errors"
+import (
+	"errors"
+)
 
 type GameStage uint8
 
@@ -12,18 +14,18 @@ const (
 	EndTurnStage
 )
 
+type GameManager struct {
+	Turns  int
+	Board  *GameBoard
+	States *States
+}
+
 type States struct {
 	Stage            GameStage
 	Team             Team
 	SelectedPosition Position
 	GameFinished     bool
 	ActionSelected   GameAction
-}
-
-type GameManager struct {
-	Turns  int
-	Board  *GameBoard
-	States *States
 }
 
 func NewGameManager(startingTeam Team, board *GameBoard) *GameManager {
@@ -45,36 +47,53 @@ func (gm *GameManager) NextGameStage() GameStage {
 	return gm.States.Stage
 }
 
-func (gm *GameManager) StartPlayersTurn() {
-	gm.States.Team.Enemy()
+func (gm *GameManager) StartTurn() {
+	gm.Turns++
+	gm.States.Team = gm.States.Team.Enemy()
 }
 
 func (gm *GameManager) ChooseCard(x, y int) error {
 	if x >= gm.Board.Width() || y >= gm.Board.Width() {
 		return errors.New("x or y out of dimensions of the board")
 	}
+	card := gm.Board.GetCard(Position{x: x, y: y})
+	if card.Value == None {
+		return errors.New("no card in that position")
+	}
+	if card.Team != gm.States.Team {
+		return errors.New("card is not from the team of the player")
+	}
+
 	gm.States.SelectedPosition = Position{x: x, y: y}
 	return nil
 }
 
 func (gm *GameManager) ChooseAction(action GameAction, pos Position) error {
-	if err := action.CanDo(pos, *gm.Board); err != nil {
+	if err := action.CanDo(pos, *gm.Board, gm.Turns); err != nil {
 		return err
 	}
 	gm.States.ActionSelected = action
 	return nil
 }
 
-func (gm GameManager) ResolveAction(target Position) {
+func (gm GameManager) ResolveAction(x, y int) error {
 	gm.States.ActionSelected.SetPosition(gm.States.SelectedPosition)
-	gm.States.ActionSelected.SetTargetPosition(target)
+	gm.States.ActionSelected.SetTargetPosition(Position{x: x, y: y})
 	gm.States.ActionSelected.SetGameBoard(gm.Board)
 
-	gm.States.ActionSelected.DoAction()
+	return gm.States.ActionSelected.DoAction()
 }
 
-func (gm *GameManager) CheckIfGameFinished() {
-	if gm.Board.CountQueens() < 2 {
+func (gm *GameManager) CheckIfGameFinished() string {
+	queens := gm.Board.CountQueens()
+	if len(queens) < 2 {
 		gm.States.GameFinished = true
+		return ""
 	}
+
+	if len(queens) == 0 {
+		return "Draw"
+	}
+
+	return queens[0].String() + " won!"
 }

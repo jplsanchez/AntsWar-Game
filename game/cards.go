@@ -9,6 +9,16 @@ const Cards_Per_Team = 19
 
 type Team int8
 
+func (t Team) String() string {
+	if t == TeamRed {
+		return "Red"
+	}
+	if t == TeamBlack {
+		return "Black"
+	}
+	return "None"
+}
+
 const None = -1
 
 const (

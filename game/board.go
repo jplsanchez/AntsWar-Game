@@ -60,14 +60,14 @@ func (b *GameBoard) TrySetEmptySpace(i int, j int) bool {
 	return false
 }
 
-func (b GameBoard) CountQueens() int {
-	numberOfQueens := 0
+func (b GameBoard) CountQueens() []Team {
+	queensAlive := make([]Team, 0)
 	b.LoopThroughBoard(func(i, j int) {
 		if b[i][j].Value == 0 {
-			numberOfQueens++
+			queensAlive = append(queensAlive, b[i][j].Team)
 		}
 	})
-	return numberOfQueens
+	return queensAlive
 }
 
 func (b GameBoard) GetCard(pos Position) Card {
