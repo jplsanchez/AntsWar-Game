@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"time"
 )
 
 type Message struct {
@@ -55,29 +56,8 @@ func (s *Server) AcceptLoop() {
 		log.Println("new connection:", conn.RemoteAddr())
 
 		s.Peer = conn
-		// go s.ReadLoop(conn)
 	}
 }
-
-// func (s *Server) ReadLoop(conn net.Conn) {
-// 	defer conn.Close()
-// 	buffer := make([]byte, 1024)
-
-// 	for {
-// 		n, err := conn.Read(buffer)
-// 		if err != nil {
-// 			log.Println("read error:", err)
-// 			return
-// 		}
-
-// 		s.MessageChannel <- Message{
-// 			From:    s.Peer.RemoteAddr().String(),
-// 			Payload: buffer[:n],
-// 		}
-
-// 		conn.Write([]byte("Ok"))
-// 	}
-// }
 
 func (s *Server) Broadcast(message []byte) ([]byte, error) {
 	if s.Peer == nil {
@@ -88,7 +68,12 @@ func (s *Server) Broadcast(message []byte) ([]byte, error) {
 		return nil, errors.New("error writing to connection, close at " + s.Peer.RemoteAddr().String() + ", error: " + err.Error())
 	}
 
-	buffer := make([]byte, 1024)
+	if err := s.Peer.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+		s.Peer.Close()
+		return nil, errors.New("error setting read deadline, close at " + s.Peer.RemoteAddr().String() + ", error: " + err.Error())
+	}
+
+	buffer := make([]byte, 2048)
 	n, err := s.Peer.Read(buffer[0:])
 	if err != nil {
 		s.Peer.Close()
