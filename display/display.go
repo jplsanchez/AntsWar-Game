@@ -5,6 +5,7 @@ import (
 )
 
 type Displayer interface {
+	Init()
 	UpdateBoard(gb game.GameBoard)
 	DisplayMessage(message string)
 	AskForString(messages ...string) (string, error)

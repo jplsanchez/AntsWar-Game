@@ -1,4 +1,4 @@
-package display
+package console
 
 import (
 	"antswar/game"
@@ -14,6 +14,8 @@ type ConsoleDisplay struct {
 	board                  game.GameBoard
 	messageLog             *MessageLog
 }
+
+func (cd *ConsoleDisplay) Init() {}
 
 func (cd *ConsoleDisplay) UpdateBoard(gb game.GameBoard) {
 	cd.board = gb

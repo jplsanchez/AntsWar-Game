@@ -23,6 +23,7 @@ func NewUI(d Displayer) *UIManager {
 }
 
 func (ui *UIManager) Run() {
+	ui.Disp.Init()
 	ui.Disp.SetHighlight(-1, -1)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
 	ui.Disp.SetPlayer(ui.Game.States.Team)
