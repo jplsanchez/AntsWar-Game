@@ -1,6 +1,6 @@
 ﻿namespace AntsWarForms
 {
-    partial class Game
+    partial class Menu
     {
         /// <summary>
         /// Required designer variable.
@@ -28,18 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            button1 = new Button();
             SuspendLayout();
             // 
-            // Game
+            // button1
+            // 
+            button1.Font = new Font("Segoe UI", 48F, FontStyle.Regular, GraphicsUnit.Point);
+            button1.Location = new Point(230, 104);
+            button1.Name = "button1";
+            button1.Size = new Size(351, 210);
+            button1.TabIndex = 0;
+            button1.Text = "Start";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += StartGame;
+            // 
+            // Menu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Name = "Game";
-            Text = "Game";
+            Controls.Add(button1);
+            Name = "Menu";
+            Text = "Form1";
             ResumeLayout(false);
         }
 
         #endregion
+
+        private Button button1;
     }
 }

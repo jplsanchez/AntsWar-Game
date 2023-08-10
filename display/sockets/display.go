@@ -3,16 +3,17 @@ package sockets
 import (
 	"antswar/game"
 	"encoding/json"
+	"log"
 )
 
 type Type string
 
 const (
 	GameBoardType  Type = "GameBoard"
-	StringType     Type = "string"
-	StringListType Type = "...string"
+	StringType     Type = "SingleString"
+	StringListType Type = "StringCollection"
 	TeamType       Type = "Team"
-	PositionType   Type = "[]int{x, y}"
+	PositionType   Type = "PositionArray"
 )
 
 type SocketDisplay struct {
@@ -25,26 +26,38 @@ type SocketDTO struct {
 }
 
 func (sd *SocketDisplay) Init() {
-	sd.server = NewServer(":8080")
+	ready := make(chan bool, 1)
+	log.Println("1")
+	go sd.StartServer(ready)
+	log.Println("2")
+
+	<-ready
+
+	log.Println("3")
+}
+
+func (sd *SocketDisplay) StartServer(ready chan bool) {
+	sd.server = NewServer(":8080", ready)
+	sd.server.Start()
 }
 func (sd SocketDisplay) UpdateBoard(gb game.GameBoard) {
 	json, err := json.Marshal(SocketDTO{GameBoardType, gb})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	_, err = sd.server.Broadcast(json)
+	_, err = sd.server.SendRequest(json)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 func (sd SocketDisplay) DisplayMessage(message string) {
 	json, err := json.Marshal(SocketDTO{StringType, message})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	_, err = sd.server.Broadcast(json)
+	_, err = sd.server.SendRequest(json)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 func (sd SocketDisplay) AskForString(messages ...string) (string, error) {
@@ -52,7 +65,7 @@ func (sd SocketDisplay) AskForString(messages ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	response, err := sd.server.Broadcast(json)
+	response, err := sd.server.SendRequest(json)
 	if err != nil {
 		return "", err
 	}
@@ -62,20 +75,20 @@ func (sd SocketDisplay) AskForString(messages ...string) (string, error) {
 func (sd SocketDisplay) SetPlayer(player game.Team) {
 	json, err := json.Marshal(SocketDTO{TeamType, player})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	_, err = sd.server.Broadcast(json)
+	_, err = sd.server.SendRequest(json)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 func (sd SocketDisplay) SetHighlight(x, y int) {
 	json, err := json.Marshal(SocketDTO{PositionType, []int{x, y}})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	_, err = sd.server.Broadcast(json)
+	_, err = sd.server.SendRequest(json)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

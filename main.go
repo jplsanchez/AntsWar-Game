@@ -2,11 +2,13 @@ package main
 
 import (
 	"antswar/display"
-	"antswar/display/console"
+	"antswar/display/sockets"
 )
 
 func main() {
-	ui := display.NewUI(&console.ConsoleDisplay{})
+	// DI := &console.ConsoleDisplay{}
+	DI := &sockets.SocketDisplay{}
+	ui := display.NewUI(DI)
 
 	ui.Run()
 }
