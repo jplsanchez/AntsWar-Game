@@ -29,7 +29,7 @@ func (ui *UIManager) Run() {
 	ui.Disp.SetPlayer(ui.Game.States.Team)
 
 	for !ui.Game.States.GameFinished {
-		ui.Disp.DisplayMessage(" ")
+		// ui.Disp.DisplayMessage(" ")
 
 		switch ui.Game.States.Stage {
 		case game.StartTurnStage:

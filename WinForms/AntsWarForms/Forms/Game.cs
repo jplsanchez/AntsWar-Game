@@ -4,6 +4,12 @@
     {
         public Position Highlight { get; set; }
         public GameBoard Board { get; set; }
+        public Team Team { get; set; }
+
+
+        public ManualResetEvent CardChooseEvent = new ManualResetEvent(false);
+        public Position? CardChosen { get; private set; }
+
 
         public Game()
         {
@@ -14,13 +20,13 @@
 
         public void Log(string text)
         {
-            if (textBox1.InvokeRequired)
+            if (LogLabel.InvokeRequired)
             {
                 Action log = delegate { Log(text); };
-                textBox1.Invoke(log);
+                LogLabel.Invoke(log);
                 return;
             }
-            textBox1.Text = text;
+            LogLabel.Text = text + "\n" + LogLabel.Text;
         }
 
         public void UpdateGameBoard(Card[][] cards)
@@ -32,6 +38,8 @@
                 return;
             }
 
+            BoardTable.Controls.Clear();
+
             for (var i = 0; i < cards.Length; i++)
             {
                 for (var j = 0; j < cards[i].Length; j++)
@@ -40,7 +48,6 @@
                     var button = new Button
                     {
                         Dock = DockStyle.Fill,
-                        //BackColor = card.Color,
                         ForeColor = card.Team == Team.Red ? Color.Red : Color.Black,
                     };
 
@@ -50,21 +57,20 @@
                         case -1: button.Text = ""; break;
                         default: button.Text = card.Value.ToString(); break;
                     }
-                    //button.Click += CardClick;
+                    button.Tag = new Position(i, j);
+                    button.Click += CardClick;
                     BoardTable.Controls.Add(button, i, j);
                 }
             }
-
-            //BoardTable.Controls.Clear();
-            //BoardTable.Controls.Add(BoardTable, 0, 0);
         }
 
-        private void CardClick(object sender, EventArgs e)
+        public void CardClick(object? sender, EventArgs e)
         {
-            var button = (Button)sender;
-            //var position = (Position)button.Tag;
-            //Highlight = position;
-            //Log($"X: {position.X}, Y: {position.Y}");
+            if (sender is null || sender.GetType() != typeof(Button)) return;
+            if (((Button)sender!).Tag is null || ((Button)sender).Tag!.GetType() != typeof(Position)) return;
+
+            CardChosen = ((Button)sender).Tag as Position;
+            CardChooseEvent.Set();
         }
     }
 }

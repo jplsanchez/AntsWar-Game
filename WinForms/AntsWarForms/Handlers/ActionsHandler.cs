@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Text.Json;
 
 namespace AntsWarForms.Handlers
 {
@@ -23,23 +17,51 @@ namespace AntsWarForms.Handlers
         {
             var cards = JsonSerializer.Deserialize<DTO<Card[][]>>(json, jsonOpt)?.Data;
             if (cards is null) return;
-
             _game.UpdateGameBoard(cards);
         }
 
         internal void SingleStringHandle(string json)
         {
-            var str = JsonSerializer.Deserialize<string>(json);
+            var str = JsonSerializer.Deserialize<DTO<string>>(json, jsonOpt);
+            if (str is null) return;
+
+            _game.Log(str.Data);
         }
-        internal void StringCollectionHandle(string json)
+
+        internal string StringCollectionHandle(string json)
         {
-            var strCollection = JsonSerializer.Deserialize<string[]>(json);
+            var strCollection = JsonSerializer.Deserialize<DTO<string[]>>(json, jsonOpt)?.Data;
+            if (strCollection is null) return "";
+            if (strCollection.FirstOrDefault()!.Equals("Choose a card to play"))
+            {
+                foreach (var message in strCollection)
+                {
+                    _game.Log(message);
+                }
+                _game.CardChooseEvent.Reset();
+                _game.CardChooseEvent.WaitOne();
+
+                if (_game.CardChosen is null) return "";
+                return _game.CardChosen!.ToString();
+            }
+
+            if (strCollection.FirstOrDefault()!.Contains("Choose an action to play"))
+            {
+                _game.Log("Work In Progess");
+                return "";
+            }
+
+            _game.Log("Work In Progess");
+            return "";
         }
+
         internal void TeamHandle(string json)
         {
-            Thread.Sleep(30000);
-            var team = JsonSerializer.Deserialize<Team>(json);
+            var team = JsonSerializer.Deserialize<DTO<Team>>(json, jsonOpt);
+            if (team is null) return;
+            _game.Team = team.Data;
         }
+
         internal void PositionArrayHandle(string json)
         {
             var xyIntArray = JsonSerializer.Deserialize<DTO<List<int>>>(json, jsonOpt)?.Data;

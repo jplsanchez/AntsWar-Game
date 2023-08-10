@@ -28,27 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            textBox1 = new TextBox();
-            Connect = new Button();
             BoardTable = new TableLayoutPanel();
+            MarchBtn = new Button();
+            MoveBtn = new Button();
+            SwapBtn = new Button();
+            AttackBtn = new Button();
+            LogLabel = new Label();
             SuspendLayout();
-            // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(496, 410);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(211, 28);
-            textBox1.TabIndex = 0;
-            // 
-            // Connect
-            // 
-            Connect.Location = new Point(713, 415);
-            Connect.Name = "Connect";
-            Connect.Size = new Size(75, 23);
-            Connect.TabIndex = 1;
-            Connect.Text = "Connect";
-            Connect.UseVisualStyleBackColor = true;
             // 
             // BoardTable
             // 
@@ -71,27 +57,83 @@
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
-            BoardTable.Size = new Size(269, 398);
+            BoardTable.Size = new Size(474, 612);
             BoardTable.TabIndex = 2;
+            // 
+            // MarchBtn
+            // 
+            MarchBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            MarchBtn.Location = new Point(687, 83);
+            MarchBtn.Name = "MarchBtn";
+            MarchBtn.Size = new Size(207, 60);
+            MarchBtn.TabIndex = 3;
+            MarchBtn.Text = "Marchar";
+            MarchBtn.UseVisualStyleBackColor = true;
+            // 
+            // MoveBtn
+            // 
+            MoveBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            MoveBtn.Location = new Point(687, 182);
+            MoveBtn.Name = "MoveBtn";
+            MoveBtn.Size = new Size(207, 60);
+            MoveBtn.TabIndex = 4;
+            MoveBtn.Text = "Mover";
+            MoveBtn.UseVisualStyleBackColor = true;
+            // 
+            // SwapBtn
+            // 
+            SwapBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            SwapBtn.Location = new Point(687, 283);
+            SwapBtn.Name = "SwapBtn";
+            SwapBtn.Size = new Size(207, 60);
+            SwapBtn.TabIndex = 5;
+            SwapBtn.Text = "Trocar";
+            SwapBtn.UseVisualStyleBackColor = true;
+            // 
+            // AttackBtn
+            // 
+            AttackBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            AttackBtn.Location = new Point(687, 398);
+            AttackBtn.Name = "AttackBtn";
+            AttackBtn.Size = new Size(207, 60);
+            AttackBtn.TabIndex = 6;
+            AttackBtn.Text = "Atacar";
+            AttackBtn.UseVisualStyleBackColor = true;
+            // 
+            // LogLabel
+            // 
+            LogLabel.AutoSize = true;
+            LogLabel.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            LogLabel.Location = new Point(687, 503);
+            LogLabel.Name = "LogLabel";
+            LogLabel.Size = new Size(40, 20);
+            LogLabel.TabIndex = 7;
+            LogLabel.Text = "Logs";
             // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1005, 664);
+            Controls.Add(LogLabel);
+            Controls.Add(AttackBtn);
+            Controls.Add(SwapBtn);
+            Controls.Add(MoveBtn);
+            Controls.Add(MarchBtn);
             Controls.Add(BoardTable);
-            Controls.Add(Connect);
-            Controls.Add(textBox1);
             Name = "Game";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Game";
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private TextBox textBox1;
-        private Button Connect;
         private TableLayoutPanel BoardTable;
+        private Button MarchBtn;
+        private Button MoveBtn;
+        private Button SwapBtn;
+        private Button AttackBtn;
+        private Label LogLabel;
     }
 }

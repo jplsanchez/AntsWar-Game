@@ -45,20 +45,21 @@ namespace AntsWarForms.Handlers
             if (received == 0) return;
             var response = Encoding.UTF8.GetString(buffer, 0, received);
 
-            _game.Log(response);
             HandleSocketResponse(response);
         }
 
 
         private void HandleSocketResponse(string response)
         {
+            string answer = "OK";
+
             if (response.Contains("\"name\":\"GameBoard\"")) _actionsHandler.GameBoardHandle(response);
             else if (response.Contains("\"name\":\"SingleString\"")) _actionsHandler.SingleStringHandle(response);
-            else if (response.Contains("\"name\":\"StringCollection\"")) _actionsHandler.StringCollectionHandle(response);
+            else if (response.Contains("\"name\":\"StringCollection\"")) answer = _actionsHandler.StringCollectionHandle(response);
             else if (response.Contains("\"name\":\"Team\"")) _actionsHandler.TeamHandle(response);
             else if (response.Contains("\"name\":\"PositionArray\"")) _actionsHandler.PositionArrayHandle(response);
 
-            _handler!.Send(Encoding.UTF8.GetBytes("OK"));
+            _handler!.Send(Encoding.UTF8.GetBytes(answer));
         }
     }
 }

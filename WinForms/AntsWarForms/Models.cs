@@ -15,8 +15,8 @@
 
     public enum Team
     {
-        Red,
-        Blue
+        Red = 0,
+        Blue = 1,
     }
 
     public class Position
@@ -28,6 +28,17 @@
         {
             X = 0;
             Y = 0;
+        }
+
+        public Position(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public override string ToString()
+        {
+              return $"{X},{Y}";
         }
     }
 }
