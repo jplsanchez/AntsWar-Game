@@ -5,6 +5,7 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type UIManager struct {
@@ -81,14 +82,14 @@ func (ui *UIManager) ChooseActionRoutine() {
 		return
 	}
 
-	switch action {
-	case "move":
+	switch {
+	case strings.Contains(action, "move"):
 		ui.Game.States.ActionSelected = &game.Move{}
-	case "swap":
+	case strings.Contains(action, "swap"):
 		ui.Game.States.ActionSelected = &game.Swap{}
-	case "march":
+	case strings.Contains(action, "march"):
 		ui.Game.States.ActionSelected = &game.March{}
-	case "attack":
+	case strings.Contains(action, "attack"):
 		ui.Game.States.ActionSelected = &game.Attack{}
 	default:
 		ui.Disp.DisplayMessage("Invalid action")

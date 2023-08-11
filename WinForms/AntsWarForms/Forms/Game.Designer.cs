@@ -69,6 +69,7 @@
             MarchBtn.TabIndex = 3;
             MarchBtn.Text = "Marchar";
             MarchBtn.UseVisualStyleBackColor = true;
+            MarchBtn.Click += MarchBtn_Click;
             // 
             // MoveBtn
             // 
@@ -79,6 +80,7 @@
             MoveBtn.TabIndex = 4;
             MoveBtn.Text = "Mover";
             MoveBtn.UseVisualStyleBackColor = true;
+            MoveBtn.Click += MoveBtn_Click;
             // 
             // SwapBtn
             // 
@@ -89,6 +91,7 @@
             SwapBtn.TabIndex = 5;
             SwapBtn.Text = "Trocar";
             SwapBtn.UseVisualStyleBackColor = true;
+            SwapBtn.Click += SwapBtn_Click;
             // 
             // AttackBtn
             // 
@@ -99,6 +102,7 @@
             AttackBtn.TabIndex = 6;
             AttackBtn.Text = "Atacar";
             AttackBtn.UseVisualStyleBackColor = true;
+            AttackBtn.Click += AttackBtn_Click;
             // 
             // LogLabel
             // 

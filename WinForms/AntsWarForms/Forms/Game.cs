@@ -11,6 +11,11 @@
         public Position? CardChosen { get; private set; }
 
 
+        public ManualResetEvent ActionChooseEvent = new ManualResetEvent(false);
+        public string? ActionChosen { get; private set; }
+
+        private bool _boardLoaded = false;
+
         public Game()
         {
             Highlight = new Position();
@@ -38,6 +43,24 @@
                 return;
             }
 
+            if (!_boardLoaded)
+            {
+                BoardFirstLoad(cards);
+                return;
+            }
+
+            for (var i = 0; i < cards.Length; i++)
+            {
+                for (var j = 0; j < cards[i].Length; j++)
+                {
+                    var button = (Button)BoardTable.Controls.Find($"Card_{i}_{j}", true).First();
+                    button.SetCardOnButton(cards[i][j]);
+                }
+            }
+        }
+
+        private void BoardFirstLoad(Card[][] cards)
+        {
             BoardTable.Controls.Clear();
 
             for (var i = 0; i < cards.Length; i++)
@@ -48,20 +71,17 @@
                     var button = new Button
                     {
                         Dock = DockStyle.Fill,
-                        ForeColor = card.Team == Team.Red ? Color.Red : Color.Black,
                     };
 
-                    switch (card.Value)
-                    {
-                        case 0: button.Text = "Q"; break;
-                        case -1: button.Text = ""; break;
-                        default: button.Text = card.Value.ToString(); break;
-                    }
+                    button.Name = $"Card_{i}_{j}";
                     button.Tag = new Position(i, j);
                     button.Click += CardClick;
+                    button.SetCardOnButton(card);
+
                     BoardTable.Controls.Add(button, i, j);
                 }
             }
+            _boardLoaded = true;
         }
 
         public void CardClick(object? sender, EventArgs e)
@@ -72,5 +92,43 @@
             CardChosen = ((Button)sender).Tag as Position;
             CardChooseEvent.Set();
         }
+
+        private void MarchBtn_Click(object sender, EventArgs e)
+        {
+            ActionChosen = "march";
+            ActionChooseEvent.Set();
+        }
+
+        private void MoveBtn_Click(object sender, EventArgs e)
+        {
+            ActionChosen = "move";
+            ActionChooseEvent.Set();
+        }
+
+        private void SwapBtn_Click(object sender, EventArgs e)
+        {
+            ActionChosen = "swap";
+            ActionChooseEvent.Set();
+        }
+
+        private void AttackBtn_Click(object sender, EventArgs e)
+        {
+            ActionChosen = "attack";
+            ActionChooseEvent.Set();
+        }
     }
+
+    public static class ButtonExtension
+    {
+        public static void SetCardOnButton(this Button button, Card card)
+        {
+            button.ForeColor = card.Team == Team.Red ? Color.Red : Color.Black;
+            switch (card.Value)
+            {
+                case 0: button.Text = "Q"; break;
+                case -1: button.Text = ""; break;
+                default: button.Text = card.Value.ToString(); break;
+            }
+        }
+    }   
 }

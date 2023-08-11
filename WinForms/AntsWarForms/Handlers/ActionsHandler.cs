@@ -32,23 +32,26 @@ namespace AntsWarForms.Handlers
         {
             var strCollection = JsonSerializer.Deserialize<DTO<string[]>>(json, jsonOpt)?.Data;
             if (strCollection is null) return "";
-            if (strCollection.FirstOrDefault()!.Equals("Choose a card to play"))
+
+            foreach (var message in strCollection)
             {
-                foreach (var message in strCollection)
-                {
-                    _game.Log(message);
-                }
+                _game.Log(message);
+            }
+
+            if (strCollection.Any(s => s.Contains("Choose a card to play") || s.Contains("Choose a target")))
+            {
                 _game.CardChooseEvent.Reset();
                 _game.CardChooseEvent.WaitOne();
-
                 if (_game.CardChosen is null) return "";
                 return _game.CardChosen!.ToString();
             }
 
-            if (strCollection.FirstOrDefault()!.Contains("Choose an action to play"))
+            if (strCollection.Any(s => s.Contains("Choose an action to play")))
             {
-                _game.Log("Work In Progess");
-                return "";
+                _game.ActionChooseEvent.Reset();
+                _game.ActionChooseEvent.WaitOne();
+                if (_game.ActionChosen is null) return "";
+                return _game.ActionChosen;
             }
 
             _game.Log("Work In Progess");
