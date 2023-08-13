@@ -3,6 +3,7 @@ package display
 import (
 	"antswar/game"
 	"errors"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,23 +31,46 @@ func (ui *UIManager) Run() {
 	ui.Disp.SetPlayer(ui.Game.States.Team)
 
 	for !ui.Game.States.GameFinished {
-		// ui.Disp.DisplayMessage(" ")
-
 		switch ui.Game.States.Stage {
 		case game.StartTurnStage:
 			ui.StartPlayersTurnRoutine()
+			ui.Disp.DisplayMessage("It's your turn! Team:" + ui.Game.States.Team.String())
+			ui.Game.NextGameStage()
+
 		case game.ChooseCardStage:
-			ui.ChooseCardRoutine()
+			if err := ui.ChooseCardRoutine(); err != nil {
+				ui.handleRoutineError(err)
+			} else {
+				ui.Game.NextGameStage()
+			}
+
 		case game.ChooseActionStage:
-			ui.ChooseActionRoutine()
+			if err := ui.ChooseActionRoutine(); err != nil {
+				ui.handleRoutineError(err)
+			} else {
+				ui.Game.NextGameStage()
+			}
+
 		case game.ResolveActionStage:
-			ui.ResolveActionRoutine()
+			if err := ui.ResolveActionRoutine(); err != nil {
+				ui.handleRoutineError(err)
+			} else {
+				ui.Game.NextGameStage()
+			}
+
 		case game.EndTurnStage:
 			ui.EndTurnRoutine()
+			ui.Game.NextGameStage()
 		}
-
-		ui.Game.NextGameStage()
 	}
+}
+
+func (ui *UIManager) handleRoutineError(err error) {
+	if err.Error() == "back" && ui.Game.States.Stage > 1 {
+		ui.Game.ReturnGameStage()
+		return
+	}
+	ui.Disp.DisplayMessage(err.Error())
 }
 
 func (ui *UIManager) StartPlayersTurnRoutine() {
@@ -54,32 +78,34 @@ func (ui *UIManager) StartPlayersTurnRoutine() {
 	ui.Disp.SetHighlight(-1, -1)
 	ui.Disp.SetPlayer(ui.Game.States.Team)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
-	ui.Disp.DisplayMessage("It's your turn! Team:" + ui.Game.States.Team.String())
 }
 
-func (ui *UIManager) ChooseCardRoutine() {
-	x, y, err := ui.GetCoordinatesFromUser("Choose a card to play")
+func (ui *UIManager) ChooseCardRoutine() error {
+	x, y, err := ui.getCoordinatesFromUser("Choose a card to play")
 	if err != nil {
-		ui.Disp.DisplayMessage("Error reading coordinates")
-		ui.ChooseCardRoutine()
-		return
+		log.Println(err)
+		return err
 	}
+
 	err = ui.Game.ChooseCard(x, y)
 	if err != nil {
-		ui.Disp.DisplayMessage(err.Error())
-		ui.ChooseCardRoutine()
-		return
+		log.Println(err)
+		return err
 	}
+
 	ui.Disp.SetHighlight(x, y)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
+	return nil
 }
 
-func (ui *UIManager) ChooseActionRoutine() {
+func (ui *UIManager) ChooseActionRoutine() error {
 	action, err := ui.Disp.AskForString("Choose an action to play (move, swap, march, attack)")
 	if err != nil {
-		ui.Disp.DisplayMessage("Error reading action")
-		ui.ChooseActionRoutine()
-		return
+		log.Println(err)
+		return err
+	}
+	if strings.Contains(action, "back") {
+		return errors.New("back")
 	}
 
 	switch {
@@ -92,49 +118,48 @@ func (ui *UIManager) ChooseActionRoutine() {
 	case strings.Contains(action, "attack"):
 		ui.Game.States.ActionSelected = &game.Attack{}
 	default:
-		ui.Disp.DisplayMessage("Invalid action")
-		ui.ChooseActionRoutine()
-		return
+		return errors.New("invalid action")
 	}
 
 	err = ui.Game.ChooseAction(ui.Game.States.ActionSelected, ui.Game.States.SelectedPosition)
 	if err != nil {
-		ui.Disp.DisplayMessage(err.Error())
-		ui.ChooseActionRoutine()
-		return
+		log.Println(err)
+		return err
 	}
+	return nil
 }
 
-func (ui *UIManager) ResolveActionRoutine() {
-	x, y, err := ui.GetCoordinatesFromUser("Choose a target")
+func (ui *UIManager) ResolveActionRoutine() error {
+	x, y, err := ui.getCoordinatesFromUser("Choose a target")
 	if err != nil {
-		ui.Disp.DisplayMessage("Error reading coordinates")
-		ui.ResolveActionRoutine()
-		return
+		log.Println(err)
+		return err
 	}
+
 	err = ui.Game.ResolveAction(x, y)
 	if err != nil {
-		ui.Disp.DisplayMessage(err.Error())
-		ui.ResolveActionRoutine()
-		return
+		log.Println(err)
+		return err
 	}
+
 	ui.Disp.UpdateBoard(*ui.Game.Board)
+	return nil
 }
 
 func (ui *UIManager) EndTurnRoutine() {
 	message := ui.Game.CheckIfGameFinished()
-
-	if message == "" {
-		return
+	if message != "" {
+		ui.Disp.DisplayMessage(message)
 	}
-
-	ui.Disp.DisplayMessage(message)
 }
 
-func (ui UIManager) GetCoordinatesFromUser(messages ...string) (int, int, error) {
+func (ui UIManager) getCoordinatesFromUser(messages ...string) (int, int, error) {
 	str, err := ui.Disp.AskForString(messages...)
 	if err != nil {
 		return -1, -1, err
+	}
+	if str == "back" {
+		return -1, -1, errors.New("back")
 	}
 	re := regexp.MustCompile("[0-9],[0-9]")
 	if re.MatchString(str) {

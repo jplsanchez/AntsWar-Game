@@ -47,6 +47,13 @@ func (gm *GameManager) NextGameStage() GameStage {
 	return gm.States.Stage
 }
 
+func (gm *GameManager) ReturnGameStage() GameStage {
+	if gm.States.Stage > 1 {
+		gm.States.Stage--
+	}
+	return gm.States.Stage
+}
+
 func (gm *GameManager) StartTurn() {
 	gm.Turns++
 	gm.States.Team = gm.States.Team.Enemy()
