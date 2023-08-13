@@ -19,7 +19,7 @@ func (cd *ConsoleDisplay) Init() {}
 
 func (cd *ConsoleDisplay) UpdateBoard(gb game.GameBoard) {
 	cd.board = gb
-	cd.UpdateDisplay()
+	cd.updateDisplay()
 }
 
 func (cd *ConsoleDisplay) DisplayMessage(message string) {
@@ -32,7 +32,7 @@ func (cd *ConsoleDisplay) DisplayMessage(message string) {
 		cd.textColor = *color.New(color.FgWhite)
 	}
 	cd.messageLog = cd.messageLog.Append(message, cd.textColor)
-	cd.UpdateDisplay()
+	cd.updateDisplay()
 }
 
 func (cd *ConsoleDisplay) AskForString(messages ...string) (string, error) {
@@ -56,24 +56,24 @@ func (cd *ConsoleDisplay) SetHighlight(x, y int) {
 	cd.highlightY = y
 }
 
-func (cd *ConsoleDisplay) UpdateDisplay() {
+func (cd *ConsoleDisplay) updateDisplay() {
 	if cd.messageLog == nil {
 		cd.messageLog = &MessageLog{}
 	}
 	CallClear()
-	cd.PrintBoard(cd.board)
+	cd.printBoard(cd.board)
 	cd.messageLog.Print()
 }
 
-func (cd ConsoleDisplay) PrintBoard(gb game.GameBoard) {
+func (cd ConsoleDisplay) printBoard(gb game.GameBoard) {
 	piecePrint := func(gb game.GameBoard, i int, j int) {
 		val := gb[j][i].Value
 		var primary, secondary *color.Color
 
-		secondary = FgColorByTeam(gb[j][i].Team)
+		secondary = fgColorByTeam(gb[j][i].Team)
 
 		if cd.highlightX == j && cd.highlightY == i {
-			primary = FgColorByTeam(gb[j][i].Team).Add(color.BgGreen)
+			primary = fgColorByTeam(gb[j][i].Team).Add(color.BgGreen)
 		} else {
 			primary = secondary
 		}
@@ -104,7 +104,7 @@ func (cd ConsoleDisplay) PrintBoard(gb game.GameBoard) {
 	}
 }
 
-func FgColorByTeam(team game.Team) *color.Color {
+func fgColorByTeam(team game.Team) *color.Color {
 	switch team {
 	case game.TeamRed:
 		return color.New(color.FgRed)
