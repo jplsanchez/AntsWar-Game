@@ -49,6 +49,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(button1);
             Name = "Menu";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
             ResumeLayout(false);
         }

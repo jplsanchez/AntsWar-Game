@@ -1,4 +1,6 @@
-﻿namespace AntsWarForms
+﻿using AntsWarForms.Forms;
+
+namespace AntsWarForms
 {
     public partial class Game : Form
     {
@@ -12,7 +14,7 @@
 
 
         public ManualResetEvent ActionChooseEvent = new ManualResetEvent(false);
-        public string? ActionChosen { get; private set; }
+        public string? ActionChosen { get; set; }
 
         private bool _boardLoaded = false;
 
@@ -31,6 +33,17 @@
                 LogLabel.Invoke(log);
                 return;
             }
+
+            if (text.ToLower().Contains("choose an action to play"))
+            {
+                var selector = new ActionSelector(this);
+
+                selector.Show();
+            }
+
+            if (text.ToLower().StartsWith("it's your turn")) LogLabel.Text = string.Empty;
+
+            InstructionsLbl.Text = text;
             LogLabel.Text = text + "\n" + LogLabel.Text;
         }
 
@@ -92,30 +105,6 @@
             CardChosen = ((Button)sender).Tag as Position;
             CardChooseEvent.Set();
         }
-
-        private void MarchBtn_Click(object sender, EventArgs e)
-        {
-            ActionChosen = "march";
-            ActionChooseEvent.Set();
-        }
-
-        private void MoveBtn_Click(object sender, EventArgs e)
-        {
-            ActionChosen = "move";
-            ActionChooseEvent.Set();
-        }
-
-        private void SwapBtn_Click(object sender, EventArgs e)
-        {
-            ActionChosen = "swap";
-            ActionChooseEvent.Set();
-        }
-
-        private void AttackBtn_Click(object sender, EventArgs e)
-        {
-            ActionChosen = "attack";
-            ActionChooseEvent.Set();
-        }
     }
 
     public static class ButtonExtension
@@ -130,5 +119,5 @@
                 default: button.Text = card.Value.ToString(); break;
             }
         }
-    }   
+    }
 }

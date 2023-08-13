@@ -29,11 +29,8 @@
         private void InitializeComponent()
         {
             BoardTable = new TableLayoutPanel();
-            MarchBtn = new Button();
-            MoveBtn = new Button();
-            SwapBtn = new Button();
-            AttackBtn = new Button();
             LogLabel = new Label();
+            InstructionsLbl = new Label();
             SuspendLayout();
             // 
             // BoardTable
@@ -46,7 +43,7 @@
             BoardTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             BoardTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             BoardTable.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            BoardTable.Location = new Point(124, 12);
+            BoardTable.Location = new Point(12, 82);
             BoardTable.Name = "BoardTable";
             BoardTable.RowCount = 8;
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
@@ -57,76 +54,39 @@
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
             BoardTable.RowStyles.Add(new RowStyle(SizeType.Percent, 12.5F));
-            BoardTable.Size = new Size(474, 612);
+            BoardTable.Size = new Size(437, 570);
             BoardTable.TabIndex = 2;
-            // 
-            // MarchBtn
-            // 
-            MarchBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            MarchBtn.Location = new Point(687, 83);
-            MarchBtn.Name = "MarchBtn";
-            MarchBtn.Size = new Size(207, 60);
-            MarchBtn.TabIndex = 3;
-            MarchBtn.Text = "Marchar";
-            MarchBtn.UseVisualStyleBackColor = true;
-            MarchBtn.Click += MarchBtn_Click;
-            // 
-            // MoveBtn
-            // 
-            MoveBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            MoveBtn.Location = new Point(687, 182);
-            MoveBtn.Name = "MoveBtn";
-            MoveBtn.Size = new Size(207, 60);
-            MoveBtn.TabIndex = 4;
-            MoveBtn.Text = "Mover";
-            MoveBtn.UseVisualStyleBackColor = true;
-            MoveBtn.Click += MoveBtn_Click;
-            // 
-            // SwapBtn
-            // 
-            SwapBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            SwapBtn.Location = new Point(687, 283);
-            SwapBtn.Name = "SwapBtn";
-            SwapBtn.Size = new Size(207, 60);
-            SwapBtn.TabIndex = 5;
-            SwapBtn.Text = "Trocar";
-            SwapBtn.UseVisualStyleBackColor = true;
-            SwapBtn.Click += SwapBtn_Click;
-            // 
-            // AttackBtn
-            // 
-            AttackBtn.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            AttackBtn.Location = new Point(687, 398);
-            AttackBtn.Name = "AttackBtn";
-            AttackBtn.Size = new Size(207, 60);
-            AttackBtn.TabIndex = 6;
-            AttackBtn.Text = "Atacar";
-            AttackBtn.UseVisualStyleBackColor = true;
-            AttackBtn.Click += AttackBtn_Click;
             // 
             // LogLabel
             // 
             LogLabel.AutoSize = true;
             LogLabel.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            LogLabel.Location = new Point(687, 503);
+            LogLabel.Location = new Point(455, 9);
             LogLabel.Name = "LogLabel";
-            LogLabel.Size = new Size(40, 20);
+            LogLabel.Size = new Size(166, 20);
             LogLabel.TabIndex = 7;
-            LogLabel.Text = "Logs";
+            LogLabel.Text = "lt's your turn! Team:Blue";
+            // 
+            // InstructionsLbl
+            // 
+            InstructionsLbl.AutoSize = true;
+            InstructionsLbl.Font = new Font("Segoe UI", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
+            InstructionsLbl.Location = new Point(12, 9);
+            InstructionsLbl.Name = "InstructionsLbl";
+            InstructionsLbl.Size = new Size(157, 37);
+            InstructionsLbl.TabIndex = 8;
+            InstructionsLbl.Text = "Intructions";
             // 
             // Game
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1005, 664);
+            ClientSize = new Size(622, 664);
+            Controls.Add(InstructionsLbl);
             Controls.Add(LogLabel);
-            Controls.Add(AttackBtn);
-            Controls.Add(SwapBtn);
-            Controls.Add(MoveBtn);
-            Controls.Add(MarchBtn);
             Controls.Add(BoardTable);
             Name = "Game";
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Game";
             ResumeLayout(false);
             PerformLayout();
@@ -134,10 +94,7 @@
 
         #endregion
         private TableLayoutPanel BoardTable;
-        private Button MarchBtn;
-        private Button MoveBtn;
-        private Button SwapBtn;
-        private Button AttackBtn;
         private Label LogLabel;
+        private Label InstructionsLbl;
     }
 }

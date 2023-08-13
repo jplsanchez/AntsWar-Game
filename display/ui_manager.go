@@ -33,54 +33,54 @@ func (ui *UIManager) Run() {
 	for !ui.Game.States.GameFinished {
 		switch ui.Game.States.Stage {
 		case game.StartTurnStage:
-			ui.StartPlayersTurnRoutine()
+			ui.startPlayersTurnRoutine()
 			ui.Disp.DisplayMessage("It's your turn! Team:" + ui.Game.States.Team.String())
 			ui.Game.NextGameStage()
 
 		case game.ChooseCardStage:
-			if err := ui.ChooseCardRoutine(); err != nil {
+			if err := ui.chooseCardRoutine(); err != nil {
 				ui.handleRoutineError(err)
 			} else {
 				ui.Game.NextGameStage()
 			}
 
 		case game.ChooseActionStage:
-			if err := ui.ChooseActionRoutine(); err != nil {
+			if err := ui.chooseActionRoutine(); err != nil {
 				ui.handleRoutineError(err)
 			} else {
 				ui.Game.NextGameStage()
 			}
 
 		case game.ResolveActionStage:
-			if err := ui.ResolveActionRoutine(); err != nil {
+			if err := ui.resolveActionRoutine(); err != nil {
 				ui.handleRoutineError(err)
 			} else {
 				ui.Game.NextGameStage()
 			}
 
 		case game.EndTurnStage:
-			ui.EndTurnRoutine()
+			ui.endTurnRoutine()
 			ui.Game.NextGameStage()
 		}
 	}
 }
 
 func (ui *UIManager) handleRoutineError(err error) {
-	if err.Error() == "back" && ui.Game.States.Stage > 1 {
+	if err.Error() == "back" {
 		ui.Game.ReturnGameStage()
 		return
 	}
 	ui.Disp.DisplayMessage(err.Error())
 }
 
-func (ui *UIManager) StartPlayersTurnRoutine() {
+func (ui *UIManager) startPlayersTurnRoutine() {
 	ui.Game.StartTurn()
 	ui.Disp.SetHighlight(-1, -1)
 	ui.Disp.SetPlayer(ui.Game.States.Team)
 	ui.Disp.UpdateBoard(*ui.Game.Board)
 }
 
-func (ui *UIManager) ChooseCardRoutine() error {
+func (ui *UIManager) chooseCardRoutine() error {
 	x, y, err := ui.getCoordinatesFromUser("Choose a card to play")
 	if err != nil {
 		log.Println(err)
@@ -98,7 +98,7 @@ func (ui *UIManager) ChooseCardRoutine() error {
 	return nil
 }
 
-func (ui *UIManager) ChooseActionRoutine() error {
+func (ui *UIManager) chooseActionRoutine() error {
 	action, err := ui.Disp.AskForString("Choose an action to play (move, swap, march, attack)")
 	if err != nil {
 		log.Println(err)
@@ -129,7 +129,7 @@ func (ui *UIManager) ChooseActionRoutine() error {
 	return nil
 }
 
-func (ui *UIManager) ResolveActionRoutine() error {
+func (ui *UIManager) resolveActionRoutine() error {
 	x, y, err := ui.getCoordinatesFromUser("Choose a target")
 	if err != nil {
 		log.Println(err)
@@ -146,7 +146,7 @@ func (ui *UIManager) ResolveActionRoutine() error {
 	return nil
 }
 
-func (ui *UIManager) EndTurnRoutine() {
+func (ui *UIManager) endTurnRoutine() {
 	message := ui.Game.CheckIfGameFinished()
 	if message != "" {
 		ui.Disp.DisplayMessage(message)

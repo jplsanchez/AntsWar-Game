@@ -50,7 +50,7 @@ func (m March) CanDo(pos Position, gb GameBoard, turn int) error {
 	hasFreeSpaces := false
 
 	checkIfIsEmptySpaceAligned := func(i, j int) bool { return (i == pos.x || j == pos.y) && gb[i][j].Value == -1 }
-	isEmptySpaceConnectedToPosition := func(i, j int) bool { return IsEmptySpaceConnectedToPosition(Position{i, j}, pos, gb) }
+	isEmptySpaceConnectedToPosition := func(i, j int) bool { return isEmptySpaceConnectedToPosition(Position{i, j}, pos, gb) }
 
 	gb.LoopThroughBoard(func(i, j int) {
 		if checkIfIsEmptySpaceAligned(i, j) && isEmptySpaceConnectedToPosition(i, j) {
@@ -79,7 +79,7 @@ func (m March) Validate() error {
 	if vector := m.targetPos.Sub(m.pos); vector.x != 0 && vector.y != 0 {
 		return errors.New("march is not valid because position and target position are not aligned")
 	}
-	if !IsEmptySpaceConnectedToPosition(m.targetPos, m.pos, *m.gb) {
+	if !isEmptySpaceConnectedToPosition(m.targetPos, m.pos, *m.gb) {
 		return errors.New("march is not valid because target position is not connected to position")
 	}
 
@@ -111,7 +111,7 @@ func (s Swap) DoAction() error {
 func (s Swap) CanDo(pos Position, gb GameBoard, turn int) error {
 	team := gb.GetCard(pos).Team
 	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team }
-	hasAdjacentAllyCards := ValidateAdjacentCards(gb, pos, validation)
+	hasAdjacentAllyCards := validateAdjacentCards(gb, pos, validation)
 	if !hasAdjacentAllyCards {
 		return errors.New("cannot swap in this position because it has no adjacent ally cards")
 	}
@@ -167,7 +167,7 @@ func (m Move) DoAction() error {
 }
 func (m Move) CanDo(pos Position, gb GameBoard, turn int) error {
 	validation := func(c Card) bool { return c.Value < 0 }
-	hasAdjacentFreeSpaces := ValidateAdjacentCards(gb, pos, validation)
+	hasAdjacentFreeSpaces := validateAdjacentCards(gb, pos, validation)
 	if !hasAdjacentFreeSpaces {
 		return errors.New("cannot move in this position because it has no adjacent free spaces")
 	}
@@ -208,7 +208,7 @@ func (a Attack) CanDo(pos Position, gb GameBoard, turn int) error {
 
 	team := gb.GetCard(pos).Team
 	validation := func(c Card) bool { return c.Value >= 0 && c.Team == team.Enemy() && c.Value <= gb[pos.x][pos.y].Value }
-	hasAdjacentEnemyCards := ValidateAdjacentCards(gb, pos, validation)
+	hasAdjacentEnemyCards := validateAdjacentCards(gb, pos, validation)
 	if !hasAdjacentEnemyCards {
 		return errors.New("cannot attack in this position because it has no adjacent enemy cards that can be attacked")
 	}
@@ -258,7 +258,7 @@ func (a Attack) Validate() error {
 
 // HELPERS
 
-func ValidateAdjacentCards(gb GameBoard, pos Position, validate func(c Card) bool) bool {
+func validateAdjacentCards(gb GameBoard, pos Position, validate func(c Card) bool) bool {
 	outOfRange := func(i, j int) bool {
 		return i < 0 || i >= gb.Width() || j < 0 || j >= gb.Height()
 	}
@@ -285,7 +285,7 @@ func ValidateAdjacentCards(gb GameBoard, pos Position, validate func(c Card) boo
 	}
 	return false
 }
-func IsEmptySpaceConnectedToPosition(emptySpace, pos Position, gb GameBoard) bool {
+func isEmptySpaceConnectedToPosition(emptySpace, pos Position, gb GameBoard) bool {
 	team := gb.GetCard(pos).Team
 	sameColumn := emptySpace.x == pos.x
 	sameRow := emptySpace.y == pos.y
